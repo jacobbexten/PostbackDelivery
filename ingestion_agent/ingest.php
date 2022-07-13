@@ -1,4 +1,4 @@
-<?php
+<?phpcd
     $redis = new Redis();
 
     $redis->connect('127.0.0.1', 6379);
@@ -7,10 +7,10 @@
     echo "Server is running: ".$redis->ping()."\n";
 
     // reads and stores incoming http POST request
-    $json = file_get_contents("php://input");
+    $json = file_get_contents('php://input');
     $json_arr = json_decode($json, true);
 
-    if ($json_arr['endpoint'] && ['data']) {
+    if ($json_arr['endpoint'] && $json_arr['data']) {
         $postback = json_encode($json_arr);
         $push = $redis->rPush('data', $postback);
         if ($push) {
