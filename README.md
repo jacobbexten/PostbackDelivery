@@ -5,6 +5,10 @@ A PHP application to ingests http requests (RAW POST DATA) along with a Go appli
   
 <br />
 
+Requests were tested using Postman. https://www.postman.com/  
+
+<br />
+
 ### **Sample Request:**  
 (POST) http://{server_ip}/ingest.php  
 (RAW POST DATA)  
