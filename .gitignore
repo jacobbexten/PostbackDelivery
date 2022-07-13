@@ -1,7 +1,3 @@
-delivery_agent/go.mod
-
-delivery_agent/go.sum
-
 delivery_agent/.idea
 
 ingestion_agent/.idea
