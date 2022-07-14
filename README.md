@@ -1,7 +1,7 @@
 # Postback Delivery Mini Project
 
 ## **Description**  
-A [PHP](ingestion_agent/ingest.php) application that ingests http requests (RAW POST DATA) along with a [Go](delivery_agent/main.go) application that delivers http responses stored in a log file. Redis is used as a queue between them.  
+A [PHP server](ingestion_agent/ingest.php) that ingests http requests (RAW POST DATA) along with a [Go server](delivery_agent/main.go) that delivers http responses stored in a log file. Redis is used as a queue between them.  
   
 <br />
 
