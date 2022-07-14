@@ -1,0 +1,8 @@
+https://zetcode.com/php/getpostrequest/
+https://tutorialedge.net/golang/go-redis-tutorial/
+https://blog.logrocket.com/making-http-requests-in-go/
+https://stackoverflow.com/questions/21345274/go-fails-to-infer-type-in-assignment-non-name-on-left-side-of
+https://go.dev/blog/json
+https://www.sohamkamani.com/golang/json/
+https://mholt.github.io/json-to-go/
+https://golang.cafe/blog/how-to-url-encode-string-in-golang-example.html
