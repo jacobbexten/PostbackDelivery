@@ -59,58 +59,57 @@ func getFromRedis(client *redis.Client, data string) (*Postback, error) {
 	return &postback, nil
 }
 
-type delivery struct {
+// reformat the URL from the JSON to use as GET request
+func reformatURL(data Postback) string {
+	for _, value := range data.Data {
+		for key, paramValue := range value {
+			fmt.Println("REACHED")
+			paramValue = url.QueryEscape(paramValue)
+			re := regexp.MustCompile(`\{` + key + `\}`)
+			data.Endpoint.URL = re.ReplaceAllString(data.Endpoint.URL, paramValue)
+		}
+		re := regexp.MustCompile(`\{.*\}`)
+		data.Endpoint.URL = re.ReplaceAllString(data.Endpoint.URL, "")
+	}
+	return data.Endpoint.URL
+}
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+type Delivery struct {
 	deliveryTime string
 	responseCode string
 	responseTime string
 	responseBody string
 }
 
-// reformat the URL from the JSON to use as GET request
-func reformatURL(data Postback) string {
-	//fmt.Println(data.Data[1].Mascot)
-	for _, value := range data.Data {
-		for key, value2 := range value {
-			fmt.Println("REACHED")
-			value2 = url.QueryEscape(value2)
-			re := regexp.MustCompile(`\{` + key + `\}`)
-			data.Endpoint.URL = re.ReplaceAllString(data.Endpoint.URL, value2)
-		}
-
-	}
-
-	//fmt.Println(re.ReplaceAllString(data.Endpoint.URL,data.Data[0].Mascot))
-	fmt.Println(data.Data)
-	fmt.Println(data)
-
-	return data.Endpoint.URL
-}
-
 // sends GET requests to endpoint
-func sendRequest(URL string) (*delivery, error) {
-	time_start := time.Now()
+func sendRequest(URL string) (*Delivery, error) {
+	timeStart := time.Now()
 
-	var delivery_data delivery
+	var deliveryData Delivery
 	response, err := http.Get(URL)
 
-	time_end := time.Now()
+	timeEnd := time.Now()
 
-	delivery_data.deliveryTime = time_end.String()
-	delivery_data.responseTime = time_end.Sub(time_start).String()
+	deliveryData.deliveryTime = timeEnd.String()
+	deliveryData.responseTime = timeEnd.Sub(timeStart).String()
 
 	if err != nil {
 		log.Fatal(err)
 	} else {
 		defer response.Body.Close()
-		delivery_data.responseCode = string(response.StatusCode)
+		deliveryData.responseCode = string(response.StatusCode)
 		body, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-		body_string := string(body)
-		log.Println(body_string)
+		checkError(err)
+		bodyString := string(body)
+		log.Println(bodyString)
 	}
-	return &delivery_data, nil
+	return &deliveryData, nil
 }
 
 func main() {
@@ -129,10 +128,10 @@ func main() {
 		if err != nil {
 			log.Println("Can't retrieve from Redis")
 		}
-		fmt.Println("HELLO")
+
 		URL := reformatURL(*data)
 		delivered, err := sendRequest(URL)
-
+		fmt.Println("HELLO")
 		if err != nil {
 			log.Println("Error sending request")
 		} else {
