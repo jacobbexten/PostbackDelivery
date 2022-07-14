@@ -11,9 +11,13 @@ import (
 	"os"
 	"regexp"
 	"time"
-	//"regexp"
-	//"net/url"
 )
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 // connecting to Redis server
 func client() *redis.Client {
@@ -22,16 +26,13 @@ func client() *redis.Client {
 		Password: "",
 		DB:       0,
 	})
-
 	return client
 }
 
 // creates log.txt (if not already existent) to output responses to
 func logger() *os.File {
 	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
+	checkError(err)
 
 	log.SetOutput(file)
 	return file
@@ -63,7 +64,6 @@ func getFromRedis(client *redis.Client, data string) (*Postback, error) {
 func reformatURL(data Postback) string {
 	for _, value := range data.Data {
 		for key, paramValue := range value {
-			fmt.Println("REACHED")
 			paramValue = url.QueryEscape(paramValue)
 			re := regexp.MustCompile(`\{` + key + `\}`)
 			data.Endpoint.URL = re.ReplaceAllString(data.Endpoint.URL, paramValue)
@@ -74,15 +74,9 @@ func reformatURL(data Postback) string {
 	return data.Endpoint.URL
 }
 
-func checkError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 type Delivery struct {
 	deliveryTime string
-	responseCode string
+	responseCode int
 	responseTime string
 	responseBody string
 }
@@ -100,14 +94,14 @@ func sendRequest(URL string) (*Delivery, error) {
 	deliveryData.responseTime = timeEnd.Sub(timeStart).String()
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err, "THIS")
 	} else {
 		defer response.Body.Close()
-		deliveryData.responseCode = string(response.StatusCode)
+		deliveryData.responseCode = response.StatusCode
 		body, err := ioutil.ReadAll(response.Body)
 		checkError(err)
-		bodyString := string(body)
-		log.Println(bodyString)
+
+		deliveryData.responseBody = string(body)
 	}
 	return &deliveryData, nil
 }
@@ -115,9 +109,8 @@ func sendRequest(URL string) (*Delivery, error) {
 func main() {
 	client := client()
 	pong, err := client.Ping().Result()
-	if err != nil {
-		log.Fatalf("Could not connect to redis %v", err)
-	}
+	checkError(err)
+
 	fmt.Println(pong, err)
 
 	logger := logger()
@@ -125,13 +118,11 @@ func main() {
 
 	for {
 		data, err := getFromRedis(client, "data")
-		if err != nil {
-			log.Println("Can't retrieve from Redis")
-		}
+		checkError(err)
 
 		URL := reformatURL(*data)
+
 		delivered, err := sendRequest(URL)
-		fmt.Println("HELLO")
 		if err != nil {
 			log.Println("Error sending request")
 		} else {
@@ -139,7 +130,6 @@ func main() {
 			log.Println("Response Code: ", delivered.responseCode)
 			log.Println("Response Time: ", delivered.responseTime)
 			log.Println("Response Body: ", delivered.responseBody)
-
 		}
 	}
 }
