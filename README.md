@@ -1,7 +1,7 @@
 # Postback Delivery Mini Project
 
 ## **Description**  
-A PHP application to ingests http requests (RAW POST DATA) along with a Go application that delivers http responses stored in a log file. Redis is used as a queue between them.  
+A PHP application that ingests http requests (RAW POST DATA) along with a Go application that delivers http responses stored in a log file. Redis is used as a queue between them.  
   
 <br />
 
