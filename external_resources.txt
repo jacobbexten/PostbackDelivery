@@ -6,3 +6,4 @@ https://go.dev/blog/json
 https://www.sohamkamani.com/golang/json/
 https://mholt.github.io/json-to-go/
 https://golang.cafe/blog/how-to-url-encode-string-in-golang-example.html
+https://gobyexample.com/regular-expressions
