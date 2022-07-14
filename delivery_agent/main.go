@@ -42,7 +42,7 @@ type Postback struct {
 		Method string `json:"method"`
 		URL    string `json:"url"`
 	} `json:"endpoint"`
-	Data map[string]string `json:"data"`
+	Data []map[string]string `json:"data"`
 }
 
 // gets object from the Redis queue
@@ -68,15 +68,20 @@ type delivery struct {
 
 // reformat the URL from the JSON to use as GET request
 func reformatURL(data Postback) string {
-	for key, value := range data.Data {
-		fmt.Println("REACHED")
-		value = url.QueryEscape(value)
-		re := regexp.MustCompile(`\{` + key + `\}`)
-		data.Endpoint.URL = re.ReplaceAllString(data.Endpoint.URL, value)
+	//fmt.Println(data.Data[1].Mascot)
+	for _, value := range data.Data {
+		for key, value2 := range value {
+			fmt.Println("REACHED")
+			value2 = url.QueryEscape(value2)
+			re := regexp.MustCompile(`\{` + key + `\}`)
+			data.Endpoint.URL = re.ReplaceAllString(data.Endpoint.URL, value2)
+		}
+
 	}
 
 	//fmt.Println(re.ReplaceAllString(data.Endpoint.URL,data.Data[0].Mascot))
 	fmt.Println(data.Data)
+	fmt.Println(data)
 
 	return data.Endpoint.URL
 }
