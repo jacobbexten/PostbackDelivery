@@ -5,7 +5,7 @@ A PHP application that ingests http requests (RAW POST DATA) along with a Go app
   
 <br />
 
-Requests were tested using Postman https://www.postman.com/  and a local Go server through [test_endpoint.go](test_endpoint.go)
+Requests were tested using Postman https://www.postman.com/  and a local Go server through [test_endpoint.go](delivery_agent/test_endpoint.go)
 
 <br />
 
